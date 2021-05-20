@@ -1,0 +1,83 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+    {{title}}
+{% endblock %}
+
+{% block body %}
+    <h2>Your Listings</h2>
+
+    <!--Each item in my listings list-->
+    {% if listings.object_list %}
+        {% for listing in listings.object_list %}
+            {% if listing.active %}
+                <div class="bidding_list">
+                    <div class="bidding_list_image">
+                        <a href="{% url 'listing' listing.title %}"><img src="{{listing.picture}}"></a>
+                    </div>
+                    <div class="bidding_list_info">
+                        <div><a href="{% url 'listing' listing.title %}" class="bidding_list_title">{{listing.title}}</a></div>
+                        
+                        <div class="bidding_list_price">Starting price: <span style="font-style: initial; font-weight: initial;">${{listing.bid}}</span></div>
+                        <div class="bidding_list_description">{{listing.description}}</div>
+                        <div class="bidding_list_time">Posted on: {{listing.serialize.time}}</div>
+                        
+                    </div>
+                </div>
+                <br>
+            {% else %}
+                <div class="bidding_list" style="background-color: #f0f0f0;">
+                    <div class="bidding_list_image">
+                        <a href="{% url 'listing' listing.title %}"><img src="{{listing.picture}}"></a>
+                    </div>
+                    <div class="bidding_list_info">
+                        <h1>This listing is no longer active</h1>
+                        <div><a href="{% url 'listing' listing.title %}" class="bidding_list_title">{{listing.title}}</a></div>
+                        
+                        <div class="bidding_list_price">Starting price: <span style="font-style: initial; font-weight: initial;">${{listing.bid}}</span></div>
+                        <div class="bidding_list_description">{{listing.description}}</div>
+                        <div class="bidding_list_time">Posted on: {{listing.serialize.time}}</div>
+                        
+                    </div>
+                </div>
+                <br>
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <div>You haven't listed any items</div>
+    {% endif %}
+
+    <!--Paginator-->
+    <div class="container">
+        <ul class="pagination justify-content-center">
+            {% if listings.has_previous %}
+                <li class="page-item"><a href="?page=1" class="page-link">&laquo; First</a></li>
+                <li class="page-item"><a href="?page={{ listings.previous_page_number }}" class="page-link">Previous</a></li>
+            {% else %}
+            <li class="page-item disabled"><a class="page-link">&laquo; First</a></li>
+            <li class="page-item disabled"><a class="page-link">Previous</a></li>
+            {% endif %}
+                
+    
+            {% if listings.number %}
+                {% if listings.has_previous %}
+                    <li class="page-item"><a href="?page={{ listings.previous_page_number }}" class="page-link">{{ listings.previous_page_number }}</a></li>
+                {% endif %}
+                <li class="page-item"><a class="page-link">{{ listings.number }}</a></li>
+                {% if listings.has_next %}
+                    <li class="page-item"><a href="?page={{ listings.next_page_number }}" class="page-link">{{ listings.next_page_number }}</a></li>
+                {% endif %}
+            {% else %}
+            <li class="page-item"><a class="page-link">0</a></li>
+            {% endif %}
+
+            {% if listings.has_next %}
+            <li class="page-item"><a href="?page={{ listings.next_page_number }}" class="page-link">Next</a></li>
+            <li class="page-item"><a href="?page={{ listings.paginator.num_pages }}" class="page-link">Last &raquo;</a></li>
+            {% else %}
+            <li class="page-item disabled"><a class="page-link">Next</a></li>
+            <li class="page-item disabled"><a class="page-link">Last &raquo;</a></li>
+            {% endif %}
+        </ul>
+    </div>
+{% endblock %}

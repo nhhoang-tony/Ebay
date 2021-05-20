@@ -1,0 +1,221 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+    {{title}}
+{% endblock %}
+
+{% block body %}
+    <!--Close and delete button-->
+    <div class="listing_detail">Listing: {{listing.title}} </div>
+    {% if is_owner %}
+        {% if listing.active %}
+            <a class="watchlist_link" href="{% url 'close' listing.title %}">
+                <div class="watchlist_button">
+                    Close this listing
+                </div>
+            </a>
+        {% else %}
+            <a class="watchlist_link" href="{% url 'delete' listing.title %}">
+                <div class="watchlist_button">
+                    Delete this listing
+                </div>
+            </a>
+        {% endif %}
+    {% endif %}
+    
+    <!--Watchlist, picture, and description section-->
+    <div>
+        {% if user.is_authenticated %}
+            {% if listing.active %}
+                {% if watchlist %}
+                <a class="watchlist_link" href="{% url 'add_watchlist' listing.title user.username %}">
+                    <div class="watchlist_button">
+                        Remove from watchlist
+                    </div>
+                </a>
+                    
+                </div>
+                {% else %}
+                <a class="watchlist_link" href="{% url 'add_watchlist' listing.title user.username %}">
+                    <div class="watchlist_button">
+                        Add to watchlist
+                    </div>
+                </a>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+
+        <div class="listing_image">
+            <img src="{{listing.picture}}">
+        </div>
+        <div class="listing_description">{{listing.description}}</div>
+        
+        <div class="listing_bid">${{price}}</div>
+        <div class="listing_message">There are currently {{bids}} bid(s) on this listing. {{message}}</div>
+    </div>
+
+    <!--Bidding section-->
+    {% if user.is_authenticated %}
+        {% if listing.active %}
+            <form action="{% url 'bid' listing.title %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input class="form-control" type="number" min="0" step="0.01" name="bid" placeholder="Enter your bid here" required="">
+                </div>
+                <input class="submit_button" type="submit" value="Bid">
+            </form>
+            {% if if_bid %}
+                <form action="{% url 'delete_bids' listing.title %}" method="POST">
+                    {% csrf_token %}
+                    <ul class="nav">
+                        <li>
+                            <input type="submit" class="delete_bid_button" value="Remove bid(s)">
+                        </li>
+                    </ul>
+                </form>
+            {% endif %}
+        {% else %}
+            <h1>{{winner_message}}</h1>
+            <form action="{% url 'bid' listing.title %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input class="form-control" type="number" min="0" step="0.01" name="bid" placeholder="This listing is no longer active" disabled>
+                </div>
+                
+                <input class="submit_button" type="submit" value="Bid" disabled>
+            </form>
+        {% endif %}
+    {% else %}
+        {% if listing.active %}
+            <form action="{% url 'bid' listing.title %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input class="form-control" type="number" min="0" step="0.01" name="bid" placeholder="You need to log in to bid" disabled>
+                </div>
+                
+                <input class="submit_button" type="submit" value="Bid" disabled>
+            </form>
+        {% else %}
+            <form action="{% url 'bid' listing.title %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input class="form-control" type="number" min="0" step="0.01" name="bid" placeholder="This listing is no longer active" disabled>
+                </div>
+                
+                <input class="submit_button" type="submit" value="Bid" disabled>
+            </form>
+        {% endif %}
+    {% endif %} 
+
+    <!--Listing detail section-->
+    <div>
+        <div class="listing_detail">Details</div>
+        <ul>
+            <li>
+                <div class="listing_info">Listed by: <span style="font-style: italic">{{listing.user.username.capitalize}}</span></div>
+            </li>
+            <li>
+                <div class="listing_category">Category: <span style="font-style: italic">{{listing.category}}</span></div>
+            </li>
+            <li>
+                <div class="listing_time">Posted on: <span style="font-style: italic">{{listing.serialize.time}}</span></div>
+            </li>
+        </ul>
+    </div>
+
+    <!--Comment form-->
+    
+    <div class="listing_detail">Comments</div>
+    {% if user.is_authenticated %}
+        {% if listing.active %}
+            <form action="{% url 'comment' listing.title %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <textarea autocapitalize="sentences" class="form-control" rows="5" class="search" type="text" name="comment" placeholder="Enter your comments here" required=""></textarea>
+                </div>
+                <input class="submit_button" type="submit" value="Comment">
+            </form>
+        {% else %}
+            <form action="{% url 'comment' listing.title %}" method="post">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <textarea autocapitalize="sentences" class="form-control" rows="5" class="search" type="text" name="comment" placeholder="This listing is no longer active" disabled></textarea>
+                </div>
+                <input class="submit_button" type="submit" value="Comment" disabled>
+            </form>
+        {% endif %}
+    {% else %}
+        {% if listing.active %}
+            <form action="{% url 'comment' listing.title %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <textarea autocapitalize="sentences" class="form-control" rows="5" class="search" type="text" name="comment" placeholder="You need to log in to comment" disabled></textarea>
+                </div>
+                <input class="submit_button" type="submit" value="Comment" disabled>
+            </form>
+        {% else %}
+        <form action="{% url 'comment' listing.title %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <textarea autocapitalize="sentences" class="form-control" rows="5" class="search" type="text" name="comment" placeholder="This listing is no longer active" disabled></textarea>
+            </div>
+            <input class="submit_button" type="submit" value="Comment" disabled>
+        </form>
+        {% endif %}
+    {% endif %} 
+
+    <!--Comment section-->
+    {% for comment in comments %}
+        <div class="listing_comment">
+            <div class="listing_comment_user">
+                {{comment.user.username.capitalize}}
+                {% if comment.user.username == request.user.username %}
+                    <a class="delete_comment" href="{% url 'delete_comment' listing.title comment.id %}">
+                        <span>Delete</span>
+                    </a>
+                {% endif %}
+            </div>
+            <div class="listing_comment_time">{{comment.serialize.time}}</div>
+            <div class="listing_comment_content">{{comment.comment}}</div>
+        </div>
+        <br>
+    {% endfor %}
+
+    <!--Paginator-->
+    <div class="container">
+        <ul class="pagination justify-content-center">
+            {% if comments.has_previous %}
+                <li class="page-item"><a href="?page=1" class="page-link">&laquo; First</a></li>
+                <li class="page-item"><a href="?page={{ comments.previous_page_number }}" class="page-link">Previous</a></li>
+            {% else %}
+            <li class="page-item disabled"><a class="page-link">&laquo; First</a></li>
+            <li class="page-item disabled"><a class="page-link">Previous</a></li>
+            {% endif %}
+                
+    
+            {% if comments.number %}
+                {% if comments.has_previous %}
+                    <li class="page-item"><a href="?page={{ comments.previous_page_number }}" class="page-link">{{ comments.previous_page_number }}</a></li>
+                {% endif %}
+                <li class="page-item"><a class="page-link">{{ comments.number }}</a></li>
+                {% if comments.has_next %}
+                    <li class="page-item"><a href="?page={{ comments.next_page_number }}" class="page-link">{{ comments.next_page_number }}</a></li>
+                {% endif %}
+            {% else %}
+            <li class="page-item"><a class="page-link">0</a></li>
+            {% endif %}
+
+            {% if comments.has_next %}
+            <li class="page-item"><a href="?page={{ comments.next_page_number }}" class="page-link">Next</a></li>
+            <li class="page-item"><a href="?page={{ comments.paginator.num_pages }}" class="page-link">Last &raquo;</a></li>
+            {% else %}
+            <li class="page-item disabled"><a class="page-link">Next</a></li>
+            <li class="page-item disabled"><a class="page-link">Last &raquo;</a></li>
+            {% endif %}
+        </ul>
+    </div>
+
+    
+
+{% endblock %}

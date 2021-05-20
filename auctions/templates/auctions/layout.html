@@ -1,0 +1,79 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% block title %}{% endblock %}</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link href="{% static 'auctions/styles.css' %}" rel="stylesheet">
+        <!-- https://favicon.io/emoji-favicons/shopping-cart -->
+        <link href="{% static 'auctions/favicon.ico' %}" rel="icon">
+    </head>
+    <body>
+        
+        <a class="logo" href="{% url 'index' %}"><h1>Tony's auctions</h1></a>
+        <div class="signed_in_as">
+            {% if user.is_authenticated %}
+                Signed in as <a class="logo" href="{% url 'my_listings' %}"><strong>{{ user.username.capitalize }}</strong></a>
+            {% else %}
+                Not signed in
+            {% endif %}
+        </div>
+        
+            <form action="{% url 'search' %}" method="POST">
+                {% csrf_token %}
+                <ul class="nav">
+                    <li>
+                        <div class="form-group">
+                            <input class="form-control" type="text" name="q" placeholder="Search listings">
+                        </div>
+                    </li>
+                    <li>
+                        <input type="submit" class="search_button" value="Search">
+                    </li>
+                </ul>
+            </form>
+        
+        <ul class="nav">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'index' %}">Active Listings</a>
+            </li>
+            {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'category' %}">Category</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'watchlist' user.username %}">Watchlist ({{watchlist_count}})</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'bid_list' %}">My Biddings ({{bidding_count}})</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'create' %}">Create Listings</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'my_listings' %}">My Listings ({{listing_count}})</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'change_password' %}">Change Password</a>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'category' %}">Category</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">Log In</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'register' %}">Register</a>
+                </li>
+            {% endif %}
+        </ul>
+        <hr>
+        {% block body %}
+        {% endblock %}
+    </body>
+</html>

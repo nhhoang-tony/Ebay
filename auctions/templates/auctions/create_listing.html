@@ -1,0 +1,59 @@
+
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+
+    Create Listing
+{% endblock %}
+
+
+{% block body %}
+    <h1>Enter your listing details here</h1>
+    {% if message %}
+        <div class="message">{{message}}</div>
+        <form action="{% url 'create' %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <input class="form-control" autofocus type="text" name="listing" 
+                placeholder="Your listing title" required="" value="{{listing}}">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="url" name="picture" 
+                placeholder="Enter your url to picture here" value="{{picture}}">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="number" min="0" step="0.01" name="bid" 
+                placeholder="Enter your starting bid here" required="" value="{{bid}}">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="text" name="category" 
+                placeholder="Enter your listing category here" required="" value="{{category}}">
+            </div>
+            <div class="form-group">
+                <textarea class="form-control" rows="10" class="search" type="text" 
+                name="description" placeholder="Enter your listing description here" required="">{{description}}</textarea>
+            </div>
+            <input class="submit_button" type="submit" value="Create">
+        </form>
+    {% else %}
+        <form action="{% url 'create' %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <input class="form-control" autofocus type="text" name="listing" placeholder="Your listing title" required="">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="url" name="picture" placeholder="Enter your url to picture here">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="number" min="0" step="0.01" name="bid" placeholder="Enter your starting bid here" required="">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="text" name="category" placeholder="Enter your listing category here" required="">
+            </div>
+            <div class="form-group">
+                <textarea class="form-control" rows="10" class="search" type="text" name="description" placeholder="Enter your listing description here" required=""></textarea>
+            </div>
+            <input class="submit_button" type="submit" value="Create">
+        </form>
+    {% endif %}
+{% endblock %}

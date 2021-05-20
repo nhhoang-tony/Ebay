@@ -1,0 +1,49 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+    {{title}}
+{% endblock %}
+
+{% block body %}
+    <h2>Categories</h2>
+
+    <ul>
+            
+    {% for category in categories.object_list %}
+        <li><a class="nav-link" href="{% url 'get_category' category %}">{{category}}</a></li>
+    {% endfor %}
+    </ul>
+
+    <div class="container">
+        <ul class="pagination justify-content-center">
+            {% if categories.has_previous %}
+                <li class="page-item"><a href="?page=1" class="page-link">&laquo; First</a></li>
+                <li class="page-item"><a href="?page={{ categories.previous_page_number }}" class="page-link">Previous</a></li>
+            {% else %}
+            <li class="page-item disabled"><a class="page-link">&laquo; First</a></li>
+            <li class="page-item disabled"><a class="page-link">Previous</a></li>
+            {% endif %}
+                
+    
+            {% if categories.number %}
+                {% if categories.has_previous %}
+                    <li class="page-item"><a href="?page={{ categories.previous_page_number }}" class="page-link">{{ categories.previous_page_number }}</a></li>
+                {% endif %}
+                <li class="page-item"><a class="page-link">{{ categories.number }}</a></li>
+                {% if categories.has_next %}
+                    <li class="page-item"><a href="?page={{ categories.next_page_number }}" class="page-link">{{ categories.next_page_number }}</a></li>
+                {% endif %}
+            {% else %}
+            <li class="page-item"><a class="page-link">0</a></li>
+            {% endif %}
+
+            {% if categories.has_next %}
+            <li class="page-item"><a href="?page={{ categories.next_page_number }}" class="page-link">Next</a></li>
+            <li class="page-item"><a href="?page={{ categories.paginator.num_pages }}" class="page-link">Last &raquo;</a></li>
+            {% else %}
+            <li class="page-item disabled"><a class="page-link">Next</a></li>
+            <li class="page-item disabled"><a class="page-link">Last &raquo;</a></li>
+            {% endif %}
+        </ul>
+    </div>
+{% endblock %}
