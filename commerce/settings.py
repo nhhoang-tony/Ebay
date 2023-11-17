@@ -122,8 +122,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'auctions/static') ##specify static root
+STATIC_ROOT = os.path.join(BASE_DIR, 'auctions/static')  # specify static root
 
 # auto log user out
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True     # opional, as this will log you out when browser is closed
+# opional, as this will log you out when browser is closed
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 30 * 60               # log out every 5 minutes (5 * 60)

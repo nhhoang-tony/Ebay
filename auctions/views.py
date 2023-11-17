@@ -26,7 +26,7 @@ def index(request):
             "bidding_count": Listings.objects.filter(title__in=Bids.objects.filter(user=request.user).values_list('listing', flat=True)).count(),
             "listing_count": request.user.users_listings.count()
         })
-    else: 
+    else:
         return render(request, "auctions/index.html", {
             "title": "Auctions",
             "listings": page_obj
@@ -52,7 +52,7 @@ def login_view(request):
             })
     # if user reach route via GET method
     else:
-        # only allow user to reach login page if not already logged in 
+        # only allow user to reach login page if not already logged in
         if not request.user.is_authenticated:
             return render(request, "auctions/login.html")
         # else redirect user to homepage
@@ -92,7 +92,7 @@ def register(request):
                 })
             login(request, user)
             return HttpResponseRedirect(reverse("index"))
-        
+
         # if user reach route via GET method
         else:
             return render(request, "auctions/register.html")
@@ -118,7 +118,7 @@ def change_password(request):
                     "message": "New passwords must be different from old password.",
                     "watchlist_count": request.user.watchlist.count(),
                     "bidding_count": Listings.objects.filter(title__in=Bids.objects.filter(user=request.user).values_list('listing', flat=True)).count(),
-                    "listing_count": request.user.users_listings.count() 
+                    "listing_count": request.user.users_listings.count()
                 })
 
             # check if user enter correct old password
@@ -127,7 +127,7 @@ def change_password(request):
                     "message": "Old password is not correct.",
                     "watchlist_count": request.user.watchlist.count(),
                     "bidding_count": Listings.objects.filter(title__in=Bids.objects.filter(user=request.user).values_list('listing', flat=True)).count(),
-                    "listing_count": request.user.users_listings.count() 
+                    "listing_count": request.user.users_listings.count()
                 })
 
             # Ensure password matches confirmation
@@ -136,7 +136,7 @@ def change_password(request):
                     "message": "New passwords must match.",
                     "watchlist_count": request.user.watchlist.count(),
                     "bidding_count": Listings.objects.filter(title__in=Bids.objects.filter(user=request.user).values_list('listing', flat=True)).count(),
-                    "listing_count": request.user.users_listings.count() 
+                    "listing_count": request.user.users_listings.count()
                 })
 
             # attempt to change password
@@ -149,7 +149,7 @@ def change_password(request):
             return render(request, "auctions/login.html", {
                 "message": "Successfully change password. Please login again"
             })
-            
+
         # if user reach route via GET method
         else:
             return render(request, "auctions/change_password.html")
@@ -159,8 +159,7 @@ def change_password(request):
 
 # render a new page for user to add listings
 def create_listings(request):
-    
-    # only allow logged in user to reach create page page 
+    # only allow logged in user to reach create page page
     if request.user.is_authenticated:
         # if user reach route via POST method as by submitting a form
         if request.method == "POST":
@@ -205,7 +204,8 @@ def create_listings(request):
                     picture += 'https://i.imgur.com/CsCgN7Ll.png'
 
                 # create new listing object
-                new_listing = Listings.objects.create(title=listing, description=description, category=category, picture=picture, bid=bid, user=request.user)
+                new_listing = Listings.objects.create(
+                    title=listing, description=description, category=category, picture=picture, bid=bid, user=request.user)
 
                 # redirect user to homepage
                 return HttpResponseRedirect(reverse("index"))
@@ -215,7 +215,7 @@ def create_listings(request):
             return render(request, "auctions/create_listing.html", {
                 "watchlist_count": request.user.watchlist.count(),
                 "bidding_count": Listings.objects.filter(title__in=Bids.objects.filter(user=request.user).values_list('listing', flat=True)).count(),
-                "listing_count": request.user.users_listings.count()        
+                "listing_count": request.user.users_listings.count()
             })
     # else redirect user to login page
     else:
@@ -230,15 +230,15 @@ def view_listings(request, title):
     except ObjectDoesNotExist:
         return JsonResponse({"error": "Listing not existed."}, status=404)
 
-    bids = Bids.objects.filter(listing=title).values_list('bid', flat = True)    
+    bids = Bids.objects.filter(listing=title).values_list('bid', flat=True)
     message = ""
     winner_message = ""
-    
+
     # if there are bids on listing, check if current user has the highest bid
     # get the max bid on item
     max_bid = max(bids) if bids else 0
     if request.user.is_authenticated:
-        
+
         # if there is a max bid
         if (max_bid):
             highest_user = Bids.objects.get(listing=title, bid=max_bid).user
@@ -281,7 +281,7 @@ def view_listings(request, title):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    if request.user.is_authenticated: 
+    if request.user.is_authenticated:
         return render(request, "auctions/listing.html", {
             "listing": listings,
             "price": f"{max_bid if max_bid else Listings.objects.get(pk=title).bid:,}",
@@ -294,7 +294,8 @@ def view_listings(request, title):
             "message": message,
             "winner_message": winner_message,
             "comments": page_obj,
-            "is_owner": request.user == Listings.objects.get(title=title).user # check if logged in user is owner
+            # check if logged in user is owner
+            "is_owner": request.user == Listings.objects.get(title=title).user
         })
     else:
         return render(request, "auctions/listing.html", {
@@ -328,8 +329,8 @@ def add_watchlist(request, title, user):
 
 # render a page that shows user's watchlist
 def view_watchlist(request, user):
-    
-    # only allow logged in user to view watchlist 
+
+    # only allow logged in user to view watchlist
     if request.user.is_authenticated:
         user = User.objects.get(username=user)
 
@@ -349,15 +350,16 @@ def view_watchlist(request, user):
     # else redirect user to login page
     else:
         return HttpResponseRedirect(reverse("login"))
-    
+
 
 # render a page that shows all categories
 def category(request):
-    category = list(dict.fromkeys(Listings.objects.exclude(active=False).values_list('category', flat=True)))
+    category = list(dict.fromkeys(Listings.objects.exclude(
+        active=False).values_list('category', flat=True)))
     paginator = Paginator(category, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
+
     if request.user.is_authenticated:
         return render(request, "auctions/category.html", {
             "categories": page_obj,
@@ -372,7 +374,8 @@ def category(request):
 
 # render a page that shows all listings within category
 def get_category(request, category):
-    listings = Listings.objects.filter(category=category).exclude(active=False).all().order_by("-time")
+    listings = Listings.objects.filter(category=category).exclude(
+        active=False).all().order_by("-time")
     paginator = Paginator(listings, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -394,36 +397,36 @@ def get_category(request, category):
 # allow user to bid on listing
 def bid(request, title):
     # only allow authenticated user to bid
-    if request.user.is_authenticated: 
+    if request.user.is_authenticated:
         # only allow user reach route via POST as by submitting a form
         if request.method == "POST":
             # get new bid
             if request.POST["bid"] == '':
                 return render(request, "auctions/invalid_bids.html", {
-                        "title": "invalid bids",
-                        "listing": title, 
-                        "message": "Your bid must not be empty",
-                        "watchlist_count": request.user.watchlist.count(),
-                        "bidding_count": Listings.objects.filter(title__in=Bids.objects.filter(user=request.user).values_list('listing', flat=True)).count(),
-                        "listing_count": request.user.users_listings.count() 
-                    })
+                    "title": "invalid bids",
+                    "listing": title,
+                    "message": "Your bid must not be empty",
+                    "watchlist_count": request.user.watchlist.count(),
+                    "bidding_count": Listings.objects.filter(title__in=Bids.objects.filter(user=request.user).values_list('listing', flat=True)).count(),
+                    "listing_count": request.user.users_listings.count()
+                })
             else:
                 new_bid = float(request.POST["bid"])
-            
 
             # check if new bids is higher than starting price
             if new_bid < Listings.objects.get(title=title).bid:
                 return render(request, "auctions/invalid_bids.html", {
                     "title": "invalid bids",
-                    "listing": title, 
+                    "listing": title,
                     "message": "Your bid is lower than starting price, please try again",
                     "watchlist_count": request.user.watchlist.count(),
                     "bidding_count": Listings.objects.filter(title__in=Bids.objects.filter(user=request.user).values_list('listing', flat=True)).count(),
-                    "listing_count": request.user.users_listings.count() 
+                    "listing_count": request.user.users_listings.count()
                 })
-            
+
             # check if new bids is not greater than any current bids
-            bids = Bids.objects.filter(listing=title).values_list('bid', flat=True)
+            bids = Bids.objects.filter(
+                listing=title).values_list('bid', flat=True)
             max_bid = max(bids) if bids else 0
             if new_bid <= max_bid:
                 return render(request, "auctions/invalid_bids.html", {
@@ -432,12 +435,13 @@ def bid(request, title):
                     "message": "Someone else already bids higher than you",
                     "watchlist_count": request.user.watchlist.count(),
                     "bidding_count": Listings.objects.filter(title__in=Bids.objects.filter(user=request.user).values_list('listing', flat=True)).count(),
-                    "listing_count": request.user.users_listings.count()   
+                    "listing_count": request.user.users_listings.count()
                 })
 
             # otherwise, allow user to bid
             try:
-                Bids.objects.create(listing=Listings.objects.get(pk=title), bid=new_bid, user=request.user)
+                Bids.objects.create(listing=Listings.objects.get(
+                    pk=title), bid=new_bid, user=request.user)
             except ObjectDoesNotExist:
                 return JsonResponse({"error": "Server can't process your bid. Please try again later."}, status=400)
             return HttpResponseRedirect(reverse("listing", args=(title, )))
@@ -483,7 +487,8 @@ def comment(request, title):
         if request.method == "POST":
             comment = request.POST["comment"]
             try:
-                Comments.objects.create(listing=Listings.objects.get(title=title), user=request.user, comment=comment)
+                Comments.objects.create(listing=Listings.objects.get(
+                    title=title), user=request.user, comment=comment)
             except ObjectDoesNotExist:
                 return JsonResponse({"error": "Server can't process your comment. Please try again later."}, status=400)
             return HttpResponseRedirect(reverse("listing", args=(title, )))
@@ -509,7 +514,8 @@ def my_listings(request):
     # only allow authenticated user to view their own listing
     if request.user.is_authenticated:
         # get all user's listings
-        listings = Listings.objects.filter(user=request.user).all().order_by("-time")
+        listings = Listings.objects.filter(
+            user=request.user).all().order_by("-time")
         paginator = Paginator(listings, 10)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
@@ -529,7 +535,8 @@ def bid_list(request):
     # only allow authenticated user to view their own listing
     if request.user.is_authenticated:
         # get all user's listings
-        listings = Listings.objects.filter(title__in=Bids.objects.filter(user=request.user).values_list('listing', flat=True)).all().order_by("-time")
+        listings = Listings.objects.filter(title__in=Bids.objects.filter(
+            user=request.user).values_list('listing', flat=True)).all().order_by("-time")
         if not listings:
             message = "You haven't bid on any items"
 
@@ -549,11 +556,13 @@ def bid_list(request):
 
 # allow users to search for listing
 def search(request):
-    # only allow search page via POST 
+    # only allow search page via POST
     if request.method == "POST":
         # get all post containing user's input
-        title = Listings.objects.filter(title__icontains=request.POST["q"]).all()
-        category = Listings.objects.filter(category__icontains=request.POST["q"]).all()
+        title = Listings.objects.filter(
+            title__icontains=request.POST["q"]).all()
+        category = Listings.objects.filter(
+            category__icontains=request.POST["q"]).all()
 
         # paginate search results
         search_result = []
@@ -591,7 +600,7 @@ def delete_bids(request, title):
         listing = Listings.objects.get(title=title)
         bids = Bids.objects.filter(listing=listing, user=request.user)
         bids.delete()
-        
+
         return HttpResponseRedirect(reverse("listing", args=(title, )))
     else:
         return HttpResponseRedirect(reverse("listing", args=(title, )))
@@ -600,8 +609,3 @@ def delete_bids(request, title):
 def utc_to_local(utc_dt):
     tz = pytz.timezone('Australia/Sydney')
     return utc_dt.replace(tzinfo=timezone.utc).astimezone(tz=tz)
-
-
-
-
-
