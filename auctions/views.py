@@ -229,10 +229,10 @@ def create_listings(request):
 def view_listings(request, title):
 
     # get all biddings on current listing
-    try:
-        listings = Listings.objects.get(pk=title)
-    except ObjectDoesNotExist:
-        return JsonResponse({"error": "Listing not existed."}, status=404)
+    # try:
+    listings = Listings.objects.get(pk=title)
+    # except ObjectDoesNotExist:
+        # return JsonResponse({"error": "Listing not existed."}, status=404)
 
     bids = Bids.objects.filter(listing=title).values_list('bid', flat=True)
     message = ""
