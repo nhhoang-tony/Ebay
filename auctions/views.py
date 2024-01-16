@@ -76,7 +76,11 @@ def register(request):
             password = request.POST["password"]
             confirmation = request.POST["confirmation"]
 
-            # Ensure password matches confirmation
+            # Ensure proper password and username
+            if " " in username or "/" in username:
+                return render(request, "auctions/register.html", {
+                    "message": "Username must not contain space or special character / or empty space"
+                })
             if password != confirmation:
                 return render(request, "auctions/register.html", {
                     "message": "Passwords must match."
