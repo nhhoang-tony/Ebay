@@ -1,4 +1,4 @@
-# A auctions website where users can list items and bid on others' listings
+# An auctions website where users can list items and bid on others' listings
 
 ## To run the auctions locally
 
