@@ -11,7 +11,7 @@
     <form action="{% url 'register' %}" method="post">
         {% csrf_token %}
         <div class="form-group">
-            <input class="form-control" autofocus type="text" name="username" placeholder="Username" required="">
+            <input class="form-control" autofocus type="text" name="username" placeholder="Username (Your email will be Username@tonymail.com)" required="">
         </div>
         <div class="form-group">
             <input class="form-control" type="email" name="email" placeholder="Email Address">
