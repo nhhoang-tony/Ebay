@@ -4,7 +4,7 @@
 
 ## To run the auctions locally
 
-1. Clone the repo `git clone https://github.com/nhhoang-tony/ebay.git`
+1. Clone the repo `git clone https://github.com/nhhoang-tony/Ebay.git`
 
 2. Ensure you have Python installed on your system
 

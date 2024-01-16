@@ -2,3 +2,5 @@ django-rest-framework==0.1.0
 whitenoise
 tzdata
 tzlocal
+psycopg2-binary
+python-dotenv
